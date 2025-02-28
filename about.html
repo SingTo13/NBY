@@ -3,27 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ปุ่มย้อนกลับ</title>
+    <title>ระบบคอมเมนต์</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
             background-color: #28282B;
-            margin: 0;
-            padding: 0;
-            position: relative; /* เพิ่ม position: relative ให้ body */
+            color: white;
+            position: relative;
+            height: 100vh;
+        }
+
+        .comment-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #333;
+        }
+
+        .comment-form {
+            margin-bottom: 20px;
+        }
+
+        .comment-form input, .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #444;
+            color: white;
+            border: 1px solid #777;
+            box-sizing: border-box;
         }
 
         .back-button {
-            position: absolute; /* กำหนด position เป็น absolute */
-            top: 20px; /* ระยะห่างจากด้านบน */
-            left: 20px; /* ระยะห่างจากด้านซ้าย */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             display: inline-block;
-            padding: 11.25px 22.5px; /* ลดขนาด padding 25% */
+            padding: 11.25px 22.5px;
             background: linear-gradient(90deg, #90EE90, #00008B);
             color: white;
             text-decoration: none;
             border: none;
             border-radius: 5px;
-            font-size: 13.5px; /* ลดขนาด font-size 25% */
+            font-size: 13.5px;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
@@ -38,9 +61,40 @@
     </style>
 </head>
 <body>
+    <h1>ระบบคอมเมนต์</h1>
+
+    <div class="comment-form">
+        <input type="text" id="nameInput" placeholder="ชื่อของคุณ">
+        <textarea id="commentInput" placeholder="เขียนคอมเมนต์..."></textarea>
+        <button id="submitComment">ส่งคอมเมนต์</button>
+    </div>
+
+    <div id="comments">
+    </div>
+
     <button id="backButton" class="back-button">ย้อนกลับ</button>
 
     <script>
+        const nameInput = document.getElementById('nameInput');
+        const commentInput = document.getElementById('commentInput');
+        const submitComment = document.getElementById('submitComment');
+        const commentsDiv = document.getElementById('comments');
+
+        submitComment.addEventListener('click', function() {
+            const name = nameInput.value.trim();
+            const commentText = commentInput.value.trim();
+            if (name !== '' && commentText !== '') {
+                const commentDiv = document.createElement('div');
+                commentDiv.classList.add('comment-container');
+                commentDiv.innerHTML = `<strong>${name}:</strong> ${commentText}`;
+                commentsDiv.appendChild(commentDiv);
+                nameInput.value = '';
+                commentInput.value = '';
+            } else {
+                alert('กรุณาใส่ชื่อและคอมเมนต์!');
+            }
+        });
+
         document.getElementById('backButton').addEventListener('click', function() {
             window.history.back();
         });

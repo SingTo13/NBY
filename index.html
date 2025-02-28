@@ -60,7 +60,7 @@
 
         section {
             width: 100vw;
-            height: 100vh;
+            height: auto;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -69,6 +69,7 @@
             color: white;
             padding: 20px;
             box-sizing: border-box;
+            border-bottom: 2px solid #7292c9;
         }
 
         #home {
@@ -79,13 +80,23 @@
         #home h1 {
             color: #9fbfff;
             font-size: 3em;
+            margin-bottom: 10px;
             animation: bounce 2s infinite ease-in-out;
         }
 
         #home p {
             color: #cacaca;
             font-size: 1.2em;
+            margin-top: 5px;
             animation: slideUp 1s ease-in-out 0.5s both;
+        }
+
+        #about h1, #projects h1 {
+            margin-bottom: 10px;
+        }
+
+        #about p, #projects p {
+            margin-top: 5px;
         }
 
         @keyframes bounce {
@@ -112,8 +123,8 @@
 
         .button {
             display: inline-block;
-            margin-top: 20px;
-            padding: 11.25px 22.5px; /* ลด padding ลง 25% */
+            margin-top: 10px;
+            padding: 11.25px 22.5px;
             background: linear-gradient(90deg, #90EE90, #00008B);
             color: white;
             text-decoration: none;
@@ -175,24 +186,24 @@
 <body>
     <nav>
         <a href="#home">หน้าแรก</a>
-        <a href="#about">เกี่ยวกับพวกเรา</a>
-        <a href="#projects">ผลงานของเรา</a>
+        <a href="#about">ความในใจของพวกเรา</a>
+        <a href="#projects">รูปของพวกเรา</a>
     </nav>
 
     <section id="home">
         <h1>ยินดีต้อนรับสู่ความทรงจำ</h1>
-        <p>นี่คือเว็บไซต์ส่วนตัวของฉันที่แสดงข้อมูลเกี่ยวกับตัวฉันและผลงานของฉัน</p>
+        <p>ยินดีต้อนรับสู่โลกแห่งความทรงจำที่ผมได้สร้างขึ้น ที่นี่เป็นเหมือนบันทึกเรื่องราวและประสบการณ์ที่ผมได้พบเจอมาตลอดชีวิต ผมหวังว่าการเดินทางผ่านตัวอักษรและภาพถ่ายเหล่านี้ จะสร้างแรงบันดาลใจและเป็นกำลังใจให้กับทุกคนที่เข้ามาเยี่ยมชม ไม่ว่าจะเป็นเรื่องราวการเดินทางที่น่าตื่นเต้น หรือช่วงเวลาแห่งความสุขกับครอบครัวและเพื่อนฝูง ทุกอย่างล้วนมีความหมายและเป็นส่วนหนึ่งที่หล่อหลอมให้ผมเป็นผมในวันนี้</p>
     </section>
 
     <section id="about">
-        <h1>เกี่ยวกับพวกเรา</h1>
-        <p>ฉันคือ [ชื่อของคุณ] มีความสนใจใน [หัวข้อที่สนใจ] และทำงานด้าน [สายงาน]</p>
+        <h1>ความในใจของพวกเรา</h1>
+        <p>ผมเป็นคนที่หลงใหลในการเรียนรู้สิ่งใหม่ๆ และเชื่อว่าทุกประสบการณ์คือการเติบโต ผมมุ่งมั่นพัฒนาตัวเองเสมอ และให้ความสำคัญกับการสร้างความสัมพันธ์ที่ดีกับคนรอบข้าง</p>
         <a href="about.html" class="button">เพิ่มเติม</a>
     </section>
 
     <section id="projects">
-        <h1>ผลงานของเรา</h1>
-        <p>นี่คือตัวอย่างผลงานของฉันที่เคยทำ</p>
+        <h1>รูปของพวกเรา</h1>
+        <p>ผลงานของผมเป็นการผสมผสานระหว่างความคิดสร้างสรรค์และทักษะที่เรียนรู้มา ผมมุ่งมั่นสร้างสรรค์ผลงานที่มีคุณภาพและตอบโจทย์ความต้องการของผู้คน</p>
         <a href="projects.html" class="button">เพิ่มเติม</a>
     </section>
 
