@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ปุ่มย้อนกลับ</title>
+    <style>
+        body {
+            background-color: #28282B;
+            margin: 0;
+            padding: 0;
+            position: relative; /* เพิ่ม position: relative ให้ body */
+        }
+
+        .back-button {
+            position: absolute; /* กำหนด position เป็น absolute */
+            top: 20px; /* ระยะห่างจากด้านบน */
+            left: 20px; /* ระยะห่างจากด้านซ้าย */
+            display: inline-block;
+            padding: 11.25px 22.5px; /* ลดขนาด padding 25% */
+            background: linear-gradient(90deg, #90EE90, #00008B);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 13.5px; /* ลดขนาด font-size 25% */
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 5px rgba(144, 238, 144, 0.5);
+        }
+
+        .back-button:hover {
+            background: linear-gradient(90deg, #7CFC00, #0000CD);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <button id="backButton" class="back-button">ย้อนกลับ</button>
+
+    <script>
+        document.getElementById('backButton').addEventListener('click', function() {
+            window.history.back();
+        });
+    </script>
+</body>
+</html>
