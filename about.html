@@ -15,24 +15,57 @@
         }
 
         .comment-container {
-            border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 10px;
             background-color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
         }
 
         .comment-form {
             margin-bottom: 20px;
         }
 
-        .comment-form input, .comment-form textarea {
+        .comment-form input, .comment-form textarea, .comment-form select {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
             background-color: #444;
             color: white;
-            border: 1px solid #777;
+            border: 2px solid transparent;
+            border-image: linear-gradient(90deg, #90EE90, #00008B);
+            border-image-slice: 1;
             box-sizing: border-box;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #90EE90, #00008B);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 5px rgba(144, 238, 144, 0.5);
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(90deg, #7CFC00, #0000CD);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
         }
 
         .back-button {
@@ -58,46 +91,306 @@
             transform: scale(1.1);
             box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
         }
+
+        .comment-time {
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .reply-button {
+            background: linear-gradient(90deg, #00BFFF, #0000FF);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 5px;
+            border-radius: 5px;
+            font-size: 12px; /* ปรับให้ตัวอักษรเล็กลง */
+            font-weight: bold;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 5px rgba(0, 191, 255, 0.5);
+        }
+
+        .reply-button:hover {
+            background: linear-gradient(90deg, #1E90FF, #00008B);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.8);
+        }
+
+        .delete-button {
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #FFA500, #FF0000);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+        }
+
+        .delete-button:hover {
+            background: linear-gradient(90deg, #FF7F50, #FF0000);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
+        }
+
+        .reply-form {
+            margin-top: 10px;
+            display: none;
+            width: 100%;
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+
+        .comment-container strong {
+            margin-right: 5px; /* ลดระยะห่าง */
+        }
+
+        .comment-container .comment-text {
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .arrow {
+            color: #00BFFF;
+            margin-right: 5px;
+        }
+
+        .arrow-long {
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+        }
+
+        .comment-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .comment-image {
+            flex: 1 1 calc(33.333% - 10px);
+            max-width: calc(33.333% - 10px);
+            max-height: 150px;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
     <h1>ระบบคอมเมนต์</h1>
 
     <div class="comment-form">
+        <label for="nameInput">พิมพ์ชื่อของคุณ</label>
         <input type="text" id="nameInput" placeholder="ชื่อของคุณ">
+        <label for="targetSelect">บอกถึง</label> 
+        <select id="targetSelect">
+            <option value="all">ทุกคน</option>
+            <option value="friend">เพื่อนที่อยากบอก</option>
+        </select>
+        <div id="friendNameInputContainer">
+            <input type="text" id="friendNameInput" placeholder="ชื่อเพื่อน (ถ้าเลือก 'เพื่อนที่อยากบอก')">
+        </div>
         <textarea id="commentInput" placeholder="เขียนคอมเมนต์..."></textarea>
-        <button id="submitComment">ส่งคอมเมนต์</button>
+        <label for="imageInput">เลือกภาพที่ต้องการเพิ่ม</label>
+        <input type="file" id="imageInput" accept="image/*" multiple>
+        <button id="submitComment" class="submit-button">ส่งคอมเมนต์</button>
     </div>
 
     <div id="comments">
     </div>
 
-    <button id="backButton" class="back-button">ย้อนกลับ</button>
+    <a href="index.html" id="backButton" class="back-button">ย้อนกลับ</a>
 
     <script>
         const nameInput = document.getElementById('nameInput');
+        const targetSelect = document.getElementById('targetSelect');
+        const friendNameInput = document.getElementById('friendNameInput');
+        const friendNameInputContainer = document.getElementById('friendNameInputContainer');
         const commentInput = document.getElementById('commentInput');
+        const imageInput = document.getElementById('imageInput');
         const submitComment = document.getElementById('submitComment');
         const commentsDiv = document.getElementById('comments');
 
+        let currentUser = "";
+
+        friendNameInputContainer.style.display = 'none';
+
+        nameInput.addEventListener('input', function() {
+            currentUser = nameInput.value.trim();
+        });
+
+        targetSelect.addEventListener('change', function() {
+            if (targetSelect.value === 'friend') {
+                friendNameInputContainer.style.display = 'block';
+            } else {
+                friendNameInputContainer.style.display = 'none';
+            }
+        });
+
         submitComment.addEventListener('click', function() {
             const name = nameInput.value.trim();
+            const target = targetSelect.value;
+            const friendName = friendNameInput.value.trim();
             const commentText = commentInput.value.trim();
+            const imageFiles = Array.from(imageInput.files);
             if (name !== '' && commentText !== '') {
-                const commentDiv = document.createElement('div');
-                commentDiv.classList.add('comment-container');
-                commentDiv.innerHTML = `<strong>${name}:</strong> ${commentText}`;
+                if (target === 'friend' && friendName === '') {
+                    alert('กรุณาใส่ชื่อเพื่อน!');
+                    return;
+                }
+
+                const commentData = {
+                    name: name,
+                    target: target,
+                    friendName: friendName,
+                    commentText: commentText,
+                    images: imageFiles.map(file => URL.createObjectURL(file))
+                };
+
+                saveCommentData(commentData);
+
+                const commentDiv = createComment(commentData);
                 commentsDiv.appendChild(commentDiv);
-                nameInput.value = '';
+
+                friendNameInput.value = '';
                 commentInput.value = '';
+                imageInput.value = '';
             } else {
                 alert('กรุณาใส่ชื่อและคอมเมนต์!');
             }
         });
 
-        document.getElementById('backButton').addEventListener('click', function() {
-            window.history.back();
-        });
+        function saveCommentData(commentData) {
+            let comments = JSON.parse(localStorage.getItem('comments')) || [];
+            comments.push(commentData);
+            localStorage.setItem('comments', JSON.stringify(comments));
+        }
+
+        function loadComments() {
+            const comments = JSON.parse(localStorage.getItem('comments')) || [];
+            comments.forEach(commentData => {
+                const commentDiv = createComment(commentData);
+                commentsDiv.appendChild(commentDiv);
+            });
+        }
+
+        function createComment(data) {
+            const { name, target, friendName, commentText, images } = data;
+
+            const commentDiv = document.createElement('div');
+            commentDiv.classList.add('comment-container');
+            commentDiv.dataset.name = name; // กำหนดชื่อของคนโพสต์
+            let targetText = target === 'all' ? 'ถึงทุกคน' : `ถึง ${friendName}`;
+            
+            let commentContent = `<strong>${name} ${targetText}</strong><span class="comment-text">${commentText}</span>`;
+            
+            if (images.length > 0) {
+                const imageContainer = document.createElement('div');
+                imageContainer.classList.add('comment-images');
+
+                images.forEach(imageUrl => {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = "comment image";
+                    img.classList.add('comment-image');
+                    imageContainer.appendChild(img);
+                });
+
+                commentDiv.innerHTML = `${commentContent}
+                    <div class="comment-actions">
+                        <button class="reply-button" data-name="${name}">ตอบกลับ</button>
+                        <button class="delete-button">ลบ</button>
+                    </div>
+                    <div class="reply-form">
+                        <textarea placeholder="เขียนคำตอบ..."></textarea>
+                        <button class="submit-reply submit-button">ส่งคำตอบ</button>
+                    </div>`;
+                commentDiv.appendChild(imageContainer);
+            } else {
+                commentDiv.innerHTML = `${commentContent}
+                    <div class="comment-actions">
+                        <button class="reply-button" data-name="${name}">ตอบกลับ</button>
+                        <button class="delete-button">ลบ</button>
+                    </div>
+                    <div class="reply-form">
+                        <textarea placeholder="เขียนคำตอบ..."></textarea>
+                        <button class="submit-reply submit-button">ส่งคำตอบ</button>
+                    </div>`;
+            }
+
+            addReplyFunctionality(commentDiv);
+
+            return commentDiv;
+        }
+
+        function addReplyFunctionality(commentDiv) {
+            const replyButton = commentDiv.querySelector('.reply-button');
+            const replyForm = commentDiv.querySelector('.reply-form');
+            const submitReply = commentDiv.querySelector('.submit-reply');
+            const deleteButton = commentDiv.querySelector('.delete-button');
+
+            replyButton.addEventListener('click', function() {
+                replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+            });
+
+            submitReply.addEventListener('click', function() {
+                const replyText = replyForm.querySelector('textarea').value.trim();
+                if (replyText !== '') {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.classList.add('comment-container');
+                    replyDiv.innerHTML = `<span class="arrow">➤</span><strong>${currentUser} ตอบกลับ ${replyButton.dataset.name}:</strong> ${replyText}
+                        <div class="comment-actions">
+                            <button class="reply-button" data-name="${currentUser}">ตอบกลับ</button>
+                            <button class="delete-button">ลบ</button>
+                        </div>
+                        <div class="reply-form">
+                            <textarea placeholder="เขียนคำตอบ..."></textarea>
+                            <button class="submit-reply submit-button">ส่งคำตอบ</button>
+                        </div>`;
+                    
+                    addReplyFunctionality(replyDiv);
+
+                    if (commentDiv.parentElement.classList.contains('comment-container')) {
+                        replyDiv.querySelector('.arrow').classList.add('arrow-long');
+                    }
+
+                    commentDiv.appendChild(replyDiv); // คำตอบจะแสดงอยู่ใต้คอมเมนต์หลัก
+                    replyForm.querySelector('textarea').value = '';
+                    replyForm.style.display = 'none';
+                }
+            });
+
+            deleteButton.addEventListener('click', function() {
+                if (currentUser === commentDiv.dataset.name) {
+                    const confirmDelete = confirm('คุณแน่ใจหรือไม่ว่าต้องการลบคอมเมนต์นี้?');
+                    if (confirmDelete) {
+                        commentDiv.parentElement.removeChild(commentDiv);
+                        removeCommentFromLocalStorage(commentDiv.dataset.name, commentDiv.querySelector('.comment-text').textContent);
+                    }
+                } else {
+                    alert('คุณสามารถลบเฉพาะคอมเมนต์ของคุณเองเท่านั้น!');
+                }
+            });
+        }
+
+        function removeCommentFromLocalStorage(name, commentText) {
+            let comments = JSON.parse(localStorage.getItem('comments')) || [];
+            comments = comments.filter(comment => comment.name !== name || comment.commentText !== commentText);
+            localStorage.setItem('comments', JSON.stringify(comments));
+        }
+
+        window.addEventListener('load', loadComments);
     </script>
 </body>
 </html>
