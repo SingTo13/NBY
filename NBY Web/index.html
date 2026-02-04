@@ -1,26 +1,61 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>เว็บไซต์สภานักเรียน</title>
-  <style>
-    body { font-family: sans-serif; padding: 40px; }
-    h1 { color: #2b5cff; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test - สภานักเรียน</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        #status { color: green; font-weight: bold; margin-top: 20px; }
+        button { padding: 10px 20px; cursor: pointer; }
+    </style>
 </head>
 <body>
 
-<h1 id="title">กำลังโหลด...</h1>
-<div id="content"></div>
+    <h1>Firebase Connection Test</h1>
+    <p>โปรเจกต์: student-council-nby-2568</p>
+    
+    <button id="testBtn">ลองส่งข้อมูลไป Firestore</button>
+    <div id="status"></div>
 
-<script>
-fetch("/.netlify/functions/getPage?page=home")
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("title").innerText = data.title;
-    document.getElementById("content").innerHTML = data.content;
-  });
-</script>
+    <script type="module">
+        // นำเข้า Firebase Functions ผ่าน CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Config ของคุณที่ให้มา
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe7iUd5wF9vh8wfbzcEgEkkTm9VLuRoDg",
+            authDomain: "student-council-nby-2568.firebaseapp.com",
+            projectId: "student-council-nby-2568",
+            storageBucket: "student-council-nby-2568.firebasestorage.app",
+            messagingSenderId: "784128111790",
+            appId: "1:784128111790:web:ed28f5e40b07d5e914293f",
+            measurementId: "G-J8JGV51WRN"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ทดสอบการส่งข้อมูล
+        const btn = document.getElementById('testBtn');
+        const statusDiv = document.getElementById('status');
+
+        btn.addEventListener('click', async () => {
+            statusDiv.innerText = "กำลังส่งข้อมูล...";
+            try {
+                const docRef = await addDoc(collection(db, "test_collection"), {
+                    message: "สวัสดีจาก Netlify!",
+                    timestamp: new Date()
+                });
+                statusDiv.innerText = "สำเร็จ! สร้าง Document ID: " + docRef.id;
+                console.log("Document written with ID: ", docRef.id);
+            } catch (e) {
+                statusDiv.innerText = "เกิดข้อผิดพลาด: " + e.message;
+                console.error("Error adding document: ", e);
+            }
+        });
+    </script>
 </body>
 </html>
