@@ -1,79 +1,32 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สภานักเรียน NBY</title>
-    <script src="https://cdn.tailwindcss.com"></script> </head>
-<body class="bg-gray-50">
+<meta charset="UTF-8">
+<title>Student Council</title>
+</head>
+<body>
 
-    <div id="banner" class="bg-blue-600 text-white p-10 text-center shadow-lg">
-        <h1 id="site-title" class="text-4xl font-bold">สภานักเรียน NBY</h1>
-        <p id="site-subtitle" class="mt-2">รับฟังทุกปัญหา พัฒนาโรงเรียนของเรา</p>
-    </div>
+<div id="app">กำลังโหลด...</div>
 
-    <div class="max-w-4xl mx-auto p-6 space-y-8">
-        <section class="bg-white p-6 rounded-2xl shadow-md border-l-8 border-red-500">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-800">🚩 รายงานปัญหาที่พบ</h2>
-            <textarea id="reportInput" class="w-full p-4 border rounded-xl" placeholder="พิมพ์ปัญหาที่พบที่นี่..."></textarea>
-            <button onclick="sendReport()" class="mt-3 bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition">ส่งรายงาน</button>
-        </section>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-        <section class="bg-white p-6 rounded-2xl shadow-md border-l-8 border-blue-500">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-800">🎵 ขอเพลงคั่นเวลา</h2>
-            <input id="songInput" type="text" class="w-full p-4 border rounded-xl" placeholder="ชื่อเพลง - ชื่อศิลปิน">
-            <button onclick="requestSong()" class="mt-3 bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition">ส่งคำขอเพลง</button>
-        </section>
+const firebaseConfig = {
+  apiKey: "AIzaSyCe7iUd5wF9vh8wfbzcEgEkkTm9VLuRoDg",
+  authDomain: "student-council-nby-2568.firebaseapp.com",
+  projectId: "student-council-nby-2568",
+};
 
-        <section class="bg-gradient-to-r from-purple-500 to-pink-500 p-8 rounded-2xl shadow-xl text-white text-center">
-            <h2 class="text-3xl font-bold">✨ ฟีเจอร์อื่นๆ</h2>
-            <p class="mt-4 text-xl italic font-light">"กำลังมาเร็วๆ นี้ รอลุ้นว่าคืออะไร..."</p>
-            <div class="mt-4 animate-bounce">🚀</div>
-        </section>
-    </div>
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+const ref = doc(db, "pages", "home");
+const snap = await getDoc(ref);
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCe7iUd5wF9vh8wfbzcEgEkkTm9VLuRoDg",
-            authDomain: "student-council-nby-2568.firebaseapp.com",
-            projectId: "student-council-nby-2568",
-            storageBucket: "student-council-nby-2568.firebasestorage.app",
-            messagingSenderId: "784128111790",
-            appId: "1:784128111790:web:ed28f5e40b07d5e914293f"
-        };
+document.getElementById("app").innerHTML =
+  snap.exists() ? snap.data().html : "ยังไม่มีเนื้อหา";
+</script>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // ดึงข้อมูลการตกแต่งเว็บจาก Firestore (CMS)
-        onSnapshot(doc(db, "web_content", "settings"), (doc) => {
-            if (doc.exists()) {
-                const data = doc.data();
-                document.getElementById('site-title').innerText = data.title;
-                document.getElementById('banner').style.backgroundColor = data.themeColor;
-            }
-        });
-
-        // ฟังก์ชันส่งรายงาน
-        window.sendReport = async () => {
-            const text = document.getElementById('reportInput').value;
-            if(!text) return alert("กรุณากรอกข้อมูล");
-            await addDoc(collection(db, "reports"), { detail: text, time: new Date() });
-            alert("ส่งรายงานเรียบร้อยแล้ว");
-            document.getElementById('reportInput').value = "";
-        };
-
-        // ฟังก์ชันขอเพลง
-        window.requestSong = async () => {
-            const text = document.getElementById('songInput').value;
-            if(!text) return alert("กรุณาระบุชื่อเพลง");
-            await addDoc(collection(db, "song_requests"), { song: text, time: new Date() });
-            alert("ส่งคำขอเพลงเรียบร้อยแล้ว");
-            document.getElementById('songInput').value = "";
-        };
-    </script>
 </body>
 </html>
