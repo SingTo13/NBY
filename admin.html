@@ -1,62 +1,50 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Panel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #111;
-      color: white;
-      padding: 20px;
-    }
-    input, textarea, button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-    }
-    button {
-      background: #00ff99;
-      color: black;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 p-8">
+    <h1 class="text-3xl font-bold mb-6">แดชบอร์ดสภานักเรียน (Admin)</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-xl font-bold text-red-600 mb-4">🚨 รายงานปัญหา</h2>
+            <div id="reportList" class="space-y-2"></div>
+        </div>
 
-<h2>🔥 Admin Panel</h2>
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-xl font-bold text-blue-600 mb-4">🎵 รายการขอเพลง</h2>
+            <div id="songList" class="space-y-2"></div>
+        </div>
+    </div>
 
-<input id="title" placeholder="หัวข้อเว็บ">
-<textarea id="content" rows="6" placeholder="เนื้อหาเว็บ"></textarea>
-<button onclick="save()">บันทึก</button>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-<script>
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID"
-  };
+        const firebaseConfig = { /* ใช้ค่าเดียวกับหน้า index */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+        // ดึงรายงานปัญหามาโชว์แบบ Real-time
+        onSnapshot(query(collection(db, "reports"), orderBy("time", "desc")), (snapshot) => {
+            const list = document.getElementById('reportList');
+            list.innerHTML = "";
+            snapshot.forEach(doc => {
+                list.innerHTML += `<div class="p-3 bg-gray-50 border-b">${doc.data().detail}</div>`;
+            });
+        });
 
-  function save() {
-    db.collection("pages").doc("home").set({
-      title: document.getElementById("title").value,
-      content: document.getElementById("content").value
-    });
-    alert("บันทึกเรียบร้อย ✅");
-  }
-</script>
-
+        // ดึงรายการขอเพลงมาโชว์แบบ Real-time
+        onSnapshot(query(collection(db, "song_requests"), orderBy("time", "desc")), (snapshot) => {
+            const list = document.getElementById('songList');
+            list.innerHTML = "";
+            snapshot.forEach(doc => {
+                list.innerHTML += `<div class="p-3 bg-gray-50 border-b">${doc.data().song}</div>`;
+            });
+        });
+    </script>
 </body>
 </html>
