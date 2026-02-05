@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: white;
+      padding: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background: #00ff99;
+      color: black;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🔥 Admin Panel</h2>
+
+<input id="title" placeholder="หัวข้อเว็บ">
+<textarea id="content" rows="6" placeholder="เนื้อหาเว็บ"></textarea>
+<button onclick="save()">บันทึก</button>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  function save() {
+    db.collection("pages").doc("home").set({
+      title: document.getElementById("title").value,
+      content: document.getElementById("content").value
+    });
+    alert("บันทึกเรียบร้อย ✅");
+  }
+</script>
+
+</body>
+</html>
