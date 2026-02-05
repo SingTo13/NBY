@@ -1,30 +1,192 @@
-<script type="module">
-  // 1. นำเข้า SDK จาก Google โดยตรง
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBY Student Council - ระบบร้องทุกข์ & ขอเพลง</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
+        .glass-morphism { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="min-h-screen">
 
-  // 2. วาง Config ที่คุณได้มา
-  const firebaseConfig = {
-    apiKey: "AIzaSyCe7iUd5wF9vh8wfbzcEgEkkTm9VLuRoDg",
-    authDomain: "student-council-nby-2568.firebaseapp.com",
-    projectId: "student-council-nby-2568",
-    storageBucket: "student-council-nby-2568.firebasestorage.app",
-    messagingSenderId: "784128111790",
-    appId: "1:784128111790:web:ed28f5e40b07d5e914293f",
-    measurementId: "G-J8JGV51WRN"
-  };
+    <nav class="bg-blue-900 text-white shadow-xl p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white p-1 rounded-full text-blue-900 font-bold w-10 h-10 flex items-center justify-center">NBY</div>
+                <span class="text-lg font-semibold hidden md:block">สภานักเรียนโรงเรียนนครบางยาง</span>
+            </div>
+            <div id="authSection">
+                <button id="loginBtn" class="bg-yellow-400 hover:bg-yellow-500 text-blue-900 px-5 py-2 rounded-full font-bold transition transform hover:scale-105">
+                    ล็อกอินสภานักเรียน
+                </button>
+                <button id="logoutBtn" class="hidden bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-full font-bold transition">
+                    ออกจากระบบ
+                </button>
+            </div>
+        </div>
+    </nav>
 
-  // 3. เริ่มการทำงาน
-  try {
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    console.log("Firebase Connected!");
-    
-    // ตรงนี้คือส่วนที่คุณต้องเปลี่ยนข้อความ "กำลังโหลด..." เป็นข้อมูลจริง
-    document.body.innerHTML = "<h1>เชื่อมต่อสำเร็จ!</h1><p>พร้อมดึงข้อมูลจาก Firestore แล้ว</p>";
-    
-  } catch (error) {
-    console.error("Connection failed: ", error);
-    document.body.innerHTML = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
-  }
-</script>
+    <div class="container mx-auto px-4 py-8">
+        <div id="userInterface" class="grid md:grid-cols-2 gap-10">
+            <div class="bg-white p-8 rounded-3xl shadow-2xl border-b-8 border-red-500">
+                <div class="text-4xl mb-4 text-red-500">📢</div>
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">ศูนย์รับเรื่องร้องทุกข์</h2>
+                <form id="reportForm" class="space-y-4">
+                    <input type="text" id="reportTitle" placeholder="เรื่องที่ต้องการแจ้ง" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-400 outline-none" required>
+                    <textarea id="reportDetail" placeholder="รายละเอียดเพิ่มเติม..." class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl h-32 focus:ring-2 focus:ring-red-400 outline-none" required></textarea>
+                    <button type="submit" class="w-full bg-red-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-red-600 shadow-lg transition">ส่งข้อมูลถึงสภาฯ</button>
+                </form>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl shadow-2xl border-b-8 border-blue-500">
+                <div class="text-4xl mb-4 text-blue-500">🎵</div>
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">ขอเพลงช่วงพักเที่ยง</h2>
+                <form id="songForm" class="space-y-4">
+                    <input type="text" id="songName" placeholder="ชื่อเพลง" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none" required>
+                    <input type="text" id="artistName" placeholder="ชื่อศิลปิน" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none" required>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 shadow-lg transition">เพิ่มลงคิวเพลง</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="adminInterface" class="hidden space-y-10 mt-10">
+            <h1 class="text-3xl font-bold text-blue-900 border-l-8 border-yellow-400 pl-4 italic">Dashboard สำหรับสภานักเรียน</h1>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold mb-4 text-red-600 flex items-center">📝 รายการร้องทุกข์ทั้งหมด</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 border-b">หัวข้อ</th>
+                                <th class="p-3 border-b">รายละเอียด</th>
+                                <th class="p-3 border-b">เวลา</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold mb-4 text-blue-600 flex items-center">🎧 รายการขอเพลงวันนี้</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 border-b">เพลง</th>
+                                <th class="p-3 border-b">ศิลปิน</th>
+                                <th class="p-3 border-b">เวลา</th>
+                            </tr>
+                        </thead>
+                        <tbody id="songTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe7iUd5wF9vh8wfbzcEgEkkTm9VLuRoDg",
+            authDomain: "student-council-nby-2568.firebaseapp.com",
+            projectId: "student-council-nby-2568",
+            storageBucket: "student-council-nby-2568.firebasestorage.app",
+            messagingSenderId: "784128111790",
+            appId: "1:784128111790:web:ed28f5e40b07d5e914293f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Elements
+        const adminInterface = document.getElementById('adminInterface');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Check Login State
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                adminInterface.classList.remove('hidden');
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                loadAdminData();
+            } else {
+                adminInterface.classList.add('hidden');
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+            }
+        });
+
+        // Login/Logout
+        loginBtn.onclick = () => signInWithPopup(auth, provider).catch(err => alert("เกิดข้อผิดพลาดในการล็อกอิน"));
+        logoutBtn.onclick = () => signOut(auth);
+
+        // Submit Report
+        document.getElementById('reportForm').onsubmit = async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "reports"), {
+                title: document.getElementById('reportTitle').value,
+                detail: document.getElementById('reportDetail').value,
+                timestamp: serverTimestamp()
+            });
+            alert("ส่งเรื่องร้องเรียนสำเร็จแล้ว ขอบคุณที่แจ้งเรื่องเข้ามาครับ");
+            e.target.reset();
+        };
+
+        // Submit Song
+        document.getElementById('songForm').onsubmit = async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "songs"), {
+                song: document.getElementById('songName').value,
+                artist: document.getElementById('artistName').value,
+                timestamp: serverTimestamp()
+            });
+            alert("บันทึกชื่อเพลงแล้ว เตรียมรอฟังได้เลย!");
+            e.target.reset();
+        };
+
+        // Load Admin Data (Firestore Fetch)
+        async function loadAdminData() {
+            // Load Reports
+            const qReports = query(collection(db, "reports"), orderBy("timestamp", "desc"));
+            const reportSnap = await getDocs(qReports);
+            const reportTable = document.getElementById('reportTableBody');
+            reportTable.innerHTML = "";
+            reportSnap.forEach(doc => {
+                const data = doc.data();
+                reportTable.innerHTML += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-3 font-semibold">${data.title}</td>
+                    <td class="p-3 text-gray-600">${data.detail}</td>
+                    <td class="p-3 text-sm">${data.timestamp?.toDate().toLocaleString('th-TH') || 'กำลังบันทึก...'}</td>
+                </tr>`;
+            });
+
+            // Load Songs
+            const qSongs = query(collection(db, "songs"), orderBy("timestamp", "desc"));
+            const songSnap = await getDocs(qSongs);
+            const songTable = document.getElementById('songTableBody');
+            songTable.innerHTML = "";
+            songSnap.forEach(doc => {
+                const data = doc.data();
+                songTable.innerHTML += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-3 font-semibold">${data.song}</td>
+                    <td class="p-3 text-gray-600">${data.artist}</td>
+                    <td class="p-3 text-sm">${data.timestamp?.toDate().toLocaleString('th-TH') || 'กำลังบันทึก...'}</td>
+                </tr>`;
+            });
+        }
+    </script>
+</body>
+      </html>
+      
