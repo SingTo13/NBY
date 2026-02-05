@@ -1,0 +1,43 @@
+<button id="login">Login ด้วย Google</button>
+<div id="panel" style="display:none;">
+  <h2>Admin Panel</h2>
+  <input id="title" placeholder="ชื่อหน้าเว็บ"><br><br>
+  <textarea id="content" placeholder="เนื้อหาเว็บ"></textarea><br><br>
+  <button id="save">บันทึก</button>
+</div>
+
+<script type="module">
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  document.getElementById("login").onclick = () => {
+    signInWithPopup(auth, provider);
+  };
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+
+    if (snap.exists() && snap.data().role === "admin") {
+      document.getElementById("panel").style.display = "block";
+    } else {
+      alert("คุณไม่ใช่ Admin");
+    }
+  });
+
+  document.getElementById("save").onclick = async () => {
+    await setDoc(doc(db, "pages", "home"), {
+      title: title.value,
+      content: content.value
+    });
+    alert("บันทึกแล้ว");
+  };
+</script>
