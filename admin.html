@@ -1,57 +1,64 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Panel | NBY</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>Admin Editor</title>
+<style>
+  body { font-family: sans-serif; display: flex; height: 100vh; margin: 0; }
+  textarea { width: 40%; padding: 10px; }
+  iframe { width: 60%; border: none; }
+  button { padding: 10px; margin: 5px; }
+</style>
 </head>
-<body class="bg-gray-50 p-6">
-    <div class="max-w-4xl mx-auto">
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-bold">หลังบ้านสภานักเรียน</h1>
-            <a href="index.html" class="text-indigo-600">กลับหน้าหลัก</a>
-        </header>
 
-        <div id="adminList" class="space-y-4">
-            </div>
-    </div>
+<body>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<textarea id="editor">
+<h1>สภานักเรียน</h1>
+<p>แก้ไขข้อความตรงนี้ได้</p>
+</textarea>
 
-        const firebaseConfig = { /* ใส่ข้อมูลของคุณที่นี่ */ };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+<div>
+  <button onclick="save()">💾 Save</button>
+  <iframe id="preview"></iframe>
+</div>
 
-        onSnapshot(query(collection(db, "reports"), orderBy("timestamp", "desc")), (snapshot) => {
-            const container = document.getElementById('adminList');
-            container.innerHTML = "";
-            
-            snapshot.forEach(d => {
-                const data = d.data();
-                container.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-md flex justify-between items-center">
-                        <div class="flex-1 mr-4">
-                            <p class="text-lg">${data.detail}</p>
-                            <p class="text-xs text-gray-400">${data.timestamp?.toDate().toLocaleString()}</p>
-                        </div>
-                        <select onchange="updateStatus('${d.id}', this.value)" class="p-2 rounded-lg border">
-                            <option value="0" ${data.status == 0 ? 'selected' : ''}>ต้องแก้ไข</option>
-                            <option value="1" ${data.status == 1 ? 'selected' : ''}>กำลังดำเนินการ</option>
-                            <option value="2" ${data.status == 2 ? 'selected' : ''}>ไม่สามารถแก้ไขได้</option>
-                            <option value="3" ${data.status == 3 ? 'selected' : ''}>แก้ไขเสร็จสิ้น</option>
-                        </select>
-                    </div>
-                `;
-            });
-        });
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-        window.updateStatus = async (id, newStatus) => {
-            const reportRef = doc(db, "reports", id);
-            await updateDoc(reportRef, { status: parseInt(newStatus) });
-            alert("อัปเดตสถานะแล้ว!");
-        };
-    </script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCe7iUd5wF9vh8wfbzcEgEkkTm9VLuRoDg",
+  authDomain: "student-council-nby-2568.firebaseapp.com",
+  projectId: "student-council-nby-2568",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const editor = document.getElementById("editor");
+const preview = document.getElementById("preview");
+
+function render() {
+  preview.srcdoc = editor.value;
+}
+editor.addEventListener("input", render);
+render();
+
+// โหลดข้อมูลเดิม
+const ref = doc(db, "pages", "home");
+const snap = await getDoc(ref);
+if (snap.exists()) {
+  editor.value = snap.data().html;
+  render();
+}
+
+// save
+window.save = async () => {
+  await setDoc(ref, { html: editor.value });
+  alert("บันทึกแล้ว");
+};
+</script>
+
 </body>
 </html>
