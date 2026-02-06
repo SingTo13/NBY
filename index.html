@@ -1,32 +1,12 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Student Council</title>
+  <title>School Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body data-page="index">
+  <div id="app"></div>
 
-<div id="app">กำลังโหลด...</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCe7iUd5wF9vh8wfbzcEgEkkTm9VLuRoDg",
-  authDomain: "student-council-nby-2568.firebaseapp.com",
-  projectId: "student-council-nby-2568",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const ref = doc(db, "pages", "home");
-const snap = await getDoc(ref);
-
-document.getElementById("app").innerHTML =
-  snap.exists() ? snap.data().html : "ยังไม่มีเนื้อหา";
-</script>
-
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
