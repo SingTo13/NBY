@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Visual Editor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen">
+  <aside class="w-64 border-r p-4">
+    <button onclick="load('index')">index</button>
+    <button onclick="load('complain')">complain</button>
+  </aside>
+
+  <main class="flex-1 p-6">
+    <input id="title" class="border p-2 w-full" />
+    <button onclick="save()" class="mt-4 bg-blue-600 text-white px-4 py-2">
+      Save
+    </button>
+  </main>
+
+  <script type="module" src="./editor.js"></script>
+</body>
+</html>
