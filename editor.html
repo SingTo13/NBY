@@ -1,22 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
+  <meta charset="UTF-8" />
   <title>Visual Editor</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="flex h-screen">
-  <aside class="w-64 border-r p-4">
-    <button onclick="load('index')">index</button>
-    <button onclick="load('complain')">complain</button>
+
+<body class="flex h-screen bg-gray-100">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white border-r p-4 space-y-2">
+    <h2 class="font-bold text-lg mb-2">Pages</h2>
+    <button class="w-full text-left px-2 py-1 border rounded"
+      onclick="loadPageEditor('index')">index</button>
+    <button class="w-full text-left px-2 py-1 border rounded"
+      onclick="loadPageEditor('complain')">complain</button>
   </aside>
 
+  <!-- Editor Panel -->
   <main class="flex-1 p-6">
-    <input id="title" class="border p-2 w-full" />
-    <button onclick="save()" class="mt-4 bg-blue-600 text-white px-4 py-2">
+    <h2 class="text-xl font-bold mb-4">Section Editor</h2>
+
+    <label class="block mb-1 text-sm">Title</label>
+    <input id="titleInput"
+      class="border p-2 w-full mb-4"
+      placeholder="Section title" />
+
+    <button onclick="saveEditor()"
+      class="bg-blue-600 text-white px-4 py-2 rounded">
       Save
     </button>
   </main>
 
-  <script type="module" src="./editor.js"></script>
+  <!-- 🔥 SCRIPT (รวม editor.js) -->
+  <script type="module">
+    import {
+      loadPage,
+      savePage,
+      watchAuth
+    } from "./firebase.js";
+
+    let currentPageId = "index";
+    let pageData = null;
+
+    /* ===== Auth Guard ===== */
+    watchAuth(user => {
+      if (!user) {
+        alert("กรุณาเข้าสู่ระบบ Admin");
+        location.href = "/login.html";
+      }
+    });
+
+    /* ===== Load Page ===== */
+    window.loadPageEditor = async function (pageId) {
+      currentPageId = pageId;
+      pageData = await loadPage(pageId);
+
+      if (!pageData || !pageData.sections.length) {
+        alert("ไม่มี section");
+        return;
+      }
+
+      // ตัวอย่าง: แก้ section แรก (Hero)
+      document.getElementById("titleInput").value =
+        pageData.sections[0].props.title || "";
+    };
+
+    /* ===== Save ===== */
+    window.saveEditor = async function () {
+      if (!pageData) return;
+
+      pageData.sections[0].props.title =
+        document.getElementById("titleInput").value;
+
+      await savePage(currentPageId, pageData);
+      alert("บันทึกเรียบร้อย");
+    };
+
+    // โหลดหน้าแรกทันที
+    loadPageEditor(currentPageId);
+  </script>
+
 </body>
 </html>
